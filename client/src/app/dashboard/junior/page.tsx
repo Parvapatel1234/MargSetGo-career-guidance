@@ -11,16 +11,19 @@ import ChatWindow from "@/components/ChatWindow";
 export default function JuniorDashboard() {
     const { user, logout } = useAuth();
     const router = useRouter();
-    const [seniors, setSeniors] = useState([]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [seniors, setSeniors] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeChatUser, setActiveChatUser] = useState(null); // State for opening chat
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [activeChatUser, setActiveChatUser] = useState<any>(null); // State for opening chat
     const [filters, setFilters] = useState({
         college: "",
         department: "",
         domain: "",
     });
 
-    const [requests, setRequests] = useState([]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [requests, setRequests] = useState<any[]>([]);
 
     useEffect(() => {
         if (user) {
@@ -32,7 +35,7 @@ export default function JuniorDashboard() {
     const fetchRequests = async () => {
         try {
             const token = localStorage.getItem("token") || user?.token;
-            const res = await fetch("http://10.221.219.27:5000/api/requests/my-requests", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/requests/my-requests`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
@@ -44,7 +47,7 @@ export default function JuniorDashboard() {
         }
     };
 
-    const getRequestStatus = (seniorId) => {
+    const getRequestStatus = (seniorId: string) => {
         const req = requests.find(r => r.senior._id === seniorId);
         return req ? req : null;
     };
@@ -55,7 +58,7 @@ export default function JuniorDashboard() {
             const queryParams = new URLSearchParams(filters).toString();
             const token = localStorage.getItem("token") || user?.token;
 
-            const res = await fetch(`http://10.221.219.27:5000/api/users/seniors?${queryParams}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/seniors?${queryParams}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -71,19 +74,19 @@ export default function JuniorDashboard() {
         }
     };
 
-    const handleFilterChange = (e) => {
+    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFilters({ ...filters, [e.target.name]: e.target.value });
     };
 
-    const applyFilters = (e) => {
+    const applyFilters = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         fetchSeniors();
     };
 
-    const handleRequestMentorship = async (seniorId) => {
+    const handleRequestMentorship = async (seniorId: string) => {
         try {
             const token = localStorage.getItem("token") || user?.token;
-            const res = await fetch("http://10.221.219.27:5000/api/requests", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/requests`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

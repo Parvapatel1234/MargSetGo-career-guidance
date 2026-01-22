@@ -1,12 +1,38 @@
 "use client";
 
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
-const AuthContext = createContext();
+interface User {
+    _id: string;
+    name: string;
+    email: string;
+    role: 'junior' | 'senior';
+    token: string;
+    profile?: {
+        college?: string;
+        department?: string;
+        currentPosition?: string;
+        guidanceDomains?: string[];
+        [key: string]: unknown;
+    };
+    [key: string]: unknown;
+}
 
-export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+interface AuthContextType {
+    user: User | null;
+    login: (userData: User) => void;
+    logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+interface AuthProviderProps {
+    children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+    const [user, setUser] = useState<User | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -17,7 +43,7 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const login = (userData) => {
+    const login = (userData: User) => {
         localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("token", userData.token); // Store token separately if needed
         setUser(userData);
@@ -44,4 +70,10 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};

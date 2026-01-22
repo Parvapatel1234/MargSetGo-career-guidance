@@ -1,12 +1,30 @@
+"use client";
+
 import { useState, useEffect, useRef } from 'react';
 import { X, Send } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
-export default function ChatWindow({ otherUser, onClose }) {
+interface ChatWindowProps {
+    otherUser: {
+        _id: string;
+        name: string;
+        role?: string;
+    };
+    onClose: () => void;
+}
+
+interface Message {
+    _id?: string;
+    sender: { _id: string } | string;
+    content: string;
+    createdAt: string;
+}
+
+export default function ChatWindow({ otherUser, onClose }: ChatWindowProps) {
     const { user } = useAuth();
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState("");
-    const messagesEndRef = useRef(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -26,7 +44,7 @@ export default function ChatWindow({ otherUser, onClose }) {
     const fetchMessages = async () => {
         try {
             const token = localStorage.getItem("token") || user?.token;
-            const res = await fetch(`http://10.221.219.27:5000/api/messages/${otherUser._id}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/messages/${otherUser._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (res.ok) {
@@ -38,13 +56,13 @@ export default function ChatWindow({ otherUser, onClose }) {
         }
     };
 
-    const handleSend = async (e) => {
+    const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!newMessage.trim()) return;
 
         try {
             const token = localStorage.getItem("token") || user?.token;
-            const res = await fetch("http://10.221.219.27:5000/api/messages", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/messages`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -60,6 +78,11 @@ export default function ChatWindow({ otherUser, onClose }) {
         } catch (error) {
             console.error("Failed to send message", error);
         }
+    };
+
+    const getSenderId = (sender: { _id: string } | string): string => {
+        if (typeof sender === 'string') return sender;
+        return sender._id;
     };
 
     return (
@@ -86,7 +109,8 @@ export default function ChatWindow({ otherUser, onClose }) {
                     <p className="text-center text-gray-400 text-sm mt-10">Say hi to start the conversation!</p>
                 ) : (
                     messages.map((msg, index) => {
-                        const isMe = msg.sender._id === user._id || msg.sender === user._id; // Handle populated/unpopulated
+                        const senderId = getSenderId(msg.sender);
+                        const isMe = senderId === user?._id;
                         return (
                             <div key={index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[75%] px-4 py-2 rounded-lg text-sm ${isMe ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'

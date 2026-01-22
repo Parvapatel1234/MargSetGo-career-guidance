@@ -11,15 +11,18 @@ import ChatWindow from "@/components/ChatWindow";
 export default function SeniorDashboard() {
     const { user, logout } = useAuth();
     const router = useRouter();
-    const [profile, setProfile] = useState(null);
-    const [requests, setRequests] = useState([]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [profile, setProfile] = useState<any>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [requests, setRequests] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeChatUser, setActiveChatUser] = useState(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [activeChatUser, setActiveChatUser] = useState<any>(null);
 
     const fetchProfile = async () => {
         try {
             const token = localStorage.getItem("token") || user?.token;
-            const res = await fetch("http://10.221.219.27:5000/api/users/profile", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
@@ -36,7 +39,7 @@ export default function SeniorDashboard() {
     const fetchRequests = async () => {
         try {
             const token = localStorage.getItem("token") || user?.token;
-            const res = await fetch("http://10.221.219.27:5000/api/requests/my-requests", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/requests/my-requests`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
@@ -48,10 +51,10 @@ export default function SeniorDashboard() {
         }
     };
 
-    const handleStatusUpdate = async (requestId, status) => {
+    const handleStatusUpdate = async (requestId: string, status: string) => {
         try {
             const token = localStorage.getItem("token") || user?.token;
-            const res = await fetch(`http://10.221.219.27:5000/api/requests/${requestId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/requests/${requestId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
