@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --font-sans: var(--font-outfit);
+}
+
+body {
+  font-family: var(--font-sans), sans-serif;
+  @apply bg-gray-50 text-gray-900 scroll-smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #818cf8;
+}
+
+@layer utilities {
+  .glass {
+    @apply backdrop-blur-md bg-white/70 border border-white/20 shadow-lg;
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-md bg-gray-900/80 border border-white/10 shadow-lg text-white;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-full font-medium hover:shadow-lg hover:scale-105 transition duration-300 transform;
+  }
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
